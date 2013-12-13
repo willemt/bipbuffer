@@ -86,6 +86,7 @@ void *bipbuf_new(const unsigned int size)
     me->a_start = me->a_end = me->b_end = 0;
     me->size = size;
     me->data = malloc(me->size);
+    me->b_inuse = 0;
     return me;
 }
 
