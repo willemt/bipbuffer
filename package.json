@@ -1,0 +1,9 @@
+{
+  "name": "bipbuffer",
+  "version": "0.0.1",
+  "repo": "willemt/bipbuffer",
+  "description": "Circular buffer alternative",
+  "keywords": ["circular buffer", "bipbuffer", "queue", "ring"],
+  "license": "BSD",
+  "src": ["bipbuffer.c", "bipbuffer.h"]
+}
