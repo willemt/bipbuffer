@@ -75,9 +75,6 @@ int bipbuf_get_unused_size(void * cb)
     }
 }
 
-/**
- * creat new bip buffer.
- * @param order to the power of two equals size*/
 void *bipbuf_new(const unsigned int size)
 {
     bipbuf_t *me;
@@ -104,9 +101,6 @@ int bipbuf_is_empty(const void * cb)
     return me->a_start == me->a_end;
 }
 
-/**
- * @return number of bytes offered
- **/
 int bipbuf_offer(void * cb, const unsigned char *data, const int size)
 {
     bipbuf_t *me = cb;
@@ -129,10 +123,6 @@ int bipbuf_offer(void * cb, const unsigned char *data, const int size)
     return size;
 }
 
-/**
- * Look at data.
- * Don't move cursor
- */
 unsigned char *bipbuf_peek(const void * cb, const unsigned int size)
 {
     const bipbuf_t *me = cb;
@@ -147,11 +137,6 @@ unsigned char *bipbuf_peek(const void * cb, const unsigned int size)
     return me->data + me->a_start;
 }
 
-/** 
- * Get pointer to data to read. Move the cursor on.
- *
- * @return pointer to data, null if we can't poll this much data
- */
 unsigned char *bipbuf_poll(void * cb, const unsigned int size)
 {
     bipbuf_t *me = cb;
@@ -196,8 +181,6 @@ int bipbuf_get_size(const void * cb)
     return me->size;
 }
 
-/**
- * @return tell us how much space we have assigned */
 int bipbuf_get_spaceused(const void* cb)
 {
     const bipbuf_t *me = cb;
