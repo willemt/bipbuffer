@@ -1,59 +1,19 @@
-/*
- 
-Copyright (c) 2011, Willem-Hendrik Thiart
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
-    * The names of its contributors may not be used to endorse or promote
-      products derived from this software without specific prior written
-      permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL WILLEM-HENDRIK THIART BE LIABLE FOR ANY
-DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-*/
 
 #include "stdio.h"
 
 #include <stdlib.h>
+
+/* for memcpy */
 #include <string.h>
+
 #include <assert.h>
-#include <unistd.h>
+
 #include "bipbuffer.h"
 
 #define fail() assert(0)
 
-typedef struct
+int bipbuf_get_unused_size(bipbuf_t* me)
 {
-    unsigned long int size;
-    /* region A */
-    unsigned int a_start, a_end;
-    /* region B */
-    unsigned int b_end;
-    /* is B inuse? */
-    int b_inuse;
-    void *data;
-
-} bipbuf_t;
-
-int bipbuf_get_unused_size(void * cb)
-{
-    bipbuf_t *me = cb;
-
     if (1 == me->b_inuse)
     {
         /* distance between region B and region A */
@@ -75,11 +35,9 @@ int bipbuf_get_unused_size(void * cb)
     }
 }
 
-void *bipbuf_new(const unsigned int size)
+bipbuf_t *bipbuf_new(const unsigned int size)
 {
-    bipbuf_t *me;
-
-    me = malloc(sizeof(bipbuf_t));
+    bipbuf_t *me = malloc(sizeof(bipbuf_t));
     me->a_start = me->a_end = me->b_end = 0;
     me->size = size;
     me->data = malloc(me->size);
@@ -87,26 +45,21 @@ void *bipbuf_new(const unsigned int size)
     return me;
 }
 
-void bipbuf_free(void * cb)
+void bipbuf_free(bipbuf_t* me)
 {
-    bipbuf_t *me = cb;
-
     free(me->data);
     free(me);
 }
 
-int bipbuf_is_empty(const void * cb)
+int bipbuf_is_empty(const bipbuf_t* me)
 {
-    const bipbuf_t *me = cb;
     return me->a_start == me->a_end;
 }
 
-int bipbuf_offer(void * cb, const unsigned char *data, const int size)
+int bipbuf_offer(bipbuf_t* me, const unsigned char *data, const int size)
 {
-    bipbuf_t *me = cb;
-
     /* not enough space */
-    if (size > bipbuf_get_unused_size(cb))
+    if (size > bipbuf_get_unused_size(me))
         return 0;
 
     if (1 == me->b_inuse)
@@ -123,28 +76,23 @@ int bipbuf_offer(void * cb, const unsigned char *data, const int size)
     return size;
 }
 
-unsigned char *bipbuf_peek(const void * cb, const unsigned int size)
+unsigned char *bipbuf_peek(const bipbuf_t* me, const unsigned int size)
 {
-    const bipbuf_t *me = cb;
-
     /* make sure we can actually peek at this data */
     if (me->size < me->a_start + size)
         return NULL;
 
-    if (bipbuf_is_empty(cb))
+    if (bipbuf_is_empty(me))
         return NULL;
 
     return me->data + me->a_start;
 }
 
-unsigned char *bipbuf_poll(void * cb, const unsigned int size)
+unsigned char *bipbuf_poll(bipbuf_t* me, const unsigned int size)
 {
-    bipbuf_t *me = cb;
     void *end;
 
-//    printf("%lx %d\n", me->data, me->start);
-//    printf("%lx %d %lx\n", me->data, me->start, me->data + me->start);
-    if (bipbuf_is_empty(cb))
+    if (bipbuf_is_empty(me))
         return NULL;
 
     /* make sure we can actually poll this data */
@@ -174,16 +122,12 @@ unsigned char *bipbuf_poll(void * cb, const unsigned int size)
     return end;
 }
 
-int bipbuf_get_size(const void * cb)
+int bipbuf_get_size(const bipbuf_t* me)
 {
-    const bipbuf_t *me = cb;
-
     return me->size;
 }
 
-int bipbuf_get_spaceused(const void* cb)
+int bipbuf_get_spaceused(const bipbuf_t* me)
 {
-    const bipbuf_t *me = cb;
-
     return (me->a_end - me->a_start) + (me->b_end);
 }
