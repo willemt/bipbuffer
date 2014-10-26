@@ -12,7 +12,7 @@ void Testbipbuffer_set_size_with_init(CuTest * tc)
     void *cb;
 
     cb = bipbuf_new(16);
-    CuAssertTrue(tc, 16 == bipbuf_get_size(cb));
+    CuAssertTrue(tc, 16 == bipbuf_size(cb));
 }
 
 void Testbipbuffer_is_empty_after_init(CuTest * tc)
@@ -28,7 +28,7 @@ void Testbipbuffer_is_not_empty_after_offer(CuTest * tc)
     void *cb;
 
     cb = bipbuf_new(16);
-    bipbuf_offer(cb, (unsigned char*)"abcd", 4);
+    bipbuf_offer(cb, (unsigned char*)strdup("abcd"), 4);
     CuAssertTrue(tc, !bipbuf_is_empty(cb));
 }
 
@@ -48,9 +48,9 @@ void Testbipbuffer_spaceused_is_zero_after_poll_release(CuTest * tc)
 
     cb = bipbuf_new(16);
     bipbuf_offer(cb, (unsigned char*)"abcd", 4);
-    CuAssertTrue(tc, 4 == bipbuf_get_spaceused(cb));
+    CuAssertTrue(tc, 4 == bipbuf_spaceused(cb));
     bipbuf_poll(cb, 4);
-    CuAssertTrue(tc, 0 == bipbuf_get_spaceused(cb));
+    CuAssertTrue(tc, 0 == bipbuf_spaceused(cb));
 }
 
 void Txestbipbuffer_cant_offer_if_full(CuTest * tc)
@@ -132,7 +132,8 @@ void Testbipbuffer_bipbuffers_independant_of_each_other(CuTest * tc)
     CuAssertTrue(tc, 0 == strncmp("efgh", (char*)bipbuf_poll(cb2, 4), 4));
 }
 
-void Testbipbuffer_bipbuffers_independant_of_each_other_with_no_polling(CuTest * tc)
+void Testbipbuffer_bipbuffers_independant_of_each_other_with_no_polling(
+    CuTest * tc)
 {
     void *cb, *cb2;
 
@@ -141,8 +142,8 @@ void Testbipbuffer_bipbuffers_independant_of_each_other_with_no_polling(CuTest *
 
     bipbuf_offer(cb, (unsigned char*)"abcd", 4);
     bipbuf_offer(cb2, (unsigned char*)"efgh", 4);
-    CuAssertTrue(tc, 0 == strncmp("abcd", (char*)bipbuf_peek(cb,4), 4));
-    CuAssertTrue(tc, 0 == strncmp("efgh", (char*)bipbuf_peek(cb2,4), 4));
+    CuAssertTrue(tc, 0 == strncmp("abcd", (char*)bipbuf_peek(cb, 4), 4));
+    CuAssertTrue(tc, 0 == strncmp("efgh", (char*)bipbuf_peek(cb2, 4), 4));
 }
 
 #if 0

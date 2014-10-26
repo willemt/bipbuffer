@@ -4,56 +4,73 @@
 typedef struct
 {
     unsigned long int size;
+
     /* region A */
     unsigned int a_start, a_end;
+
     /* region B */
     unsigned int b_end;
+
     /* is B inuse? */
     int b_inuse;
-    void *data;
 
+    unsigned char data[];
 } bipbuf_t;
 
+/**
+ * Create a new bip buffer.
+ *
+ * malloc()s space
+ *
+ * @param[in] size The size of the buffer */
+bipbuf_t *bipbuf_new(const unsigned int size);
 
 /**
- * creat new bip buffer.
- * @param order to the power of two equals size*/
-bipbuf_t *bipbuf_new(const unsigned int order);
+ * Initialise a bip buffer. Use memory provided by user.
+ *
+ * No malloc()s are performed.
+ *
+ * @param[in] size The size of the array */
+void bipbuf_init(bipbuf_t* me, const unsigned int size);
 
 /**
- * De-allocate bip buffer */
-void bipbuf_poll_release(bipbuf_t *me, const int size);
+ * Free the bip buffer */
+void bipbuf_free(bipbuf_t *me);
 
 /**
- * @return number of bytes offered
- **/
+ * @param[in] data The data to be offered to the buffer
+ * @param[in] size The size of the data to be offered
+ * @return number of bytes offered */
 int bipbuf_offer(bipbuf_t *me, const unsigned char *data, const int size);
 
 /**
- * @return bytes of unused space the bipbuffer has */
-int bipbuf_get_unused_size(bipbuf_t* me);
-
-/**
- * Look at data.
- * Don't move cursor
- */
+ * Look at data. Don't move cursor
+ *
+ * @param[in] len The length of the data to be peeked
+ * @return data on success, NULL if we can't peek at this much data */
 unsigned char *bipbuf_peek(const bipbuf_t* me, const unsigned int len);
 
-/** 
+/**
  * Get pointer to data to read. Move the cursor on.
  *
- * @return pointer to data, null if we can't poll this much data
- */
+ * @param[in] len The length of the data to be polled
+ * @return pointer to data, NULL if we can't poll this much data */
 unsigned char *bipbuf_poll(bipbuf_t* me, const unsigned int size);
 
-int bipbuf_get_size(const bipbuf_t* me);
+/**
+ * @return the size of the bipbuffer */
+int bipbuf_size(const bipbuf_t* me);
 
-void bipbuf_free(bipbuf_t* me);
-
+/**
+ * @return 1 if buffer is empty; 0 otherwise */
 int bipbuf_is_empty(const bipbuf_t* me);
 
 /**
- * @return tell us how much space we have assigned */
-int bipbuf_get_spaceused(const bipbuf_t* cb);
+ * @return how much space we have assigned */
+int bipbuf_spaceused(const bipbuf_t* cb);
+
+/**
+ * @return bytes of unused space */
+int bipbuf_spaceunused(const bipbuf_t* me);
 
 #endif /* BIPBUFFER_H */
