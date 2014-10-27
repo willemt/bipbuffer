@@ -67,10 +67,10 @@ int bipbuf_is_empty(const bipbuf_t* me);
 
 /**
  * @return how much space we have assigned */
-int bipbuf_spaceused(const bipbuf_t* cb);
+int bipbuf_used(const bipbuf_t* cb);
 
 /**
  * @return bytes of unused space */
-int bipbuf_spaceunused(const bipbuf_t* me);
+int bipbuf_unused(const bipbuf_t* me);
 
 #endif /* BIPBUFFER_H */

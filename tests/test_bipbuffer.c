@@ -48,9 +48,9 @@ void Testbipbuffer_spaceused_is_zero_after_poll_release(CuTest * tc)
 
     cb = bipbuf_new(16);
     bipbuf_offer(cb, (unsigned char*)"abcd", 4);
-    CuAssertTrue(tc, 4 == bipbuf_spaceused(cb));
+    CuAssertTrue(tc, 4 == bipbuf_used(cb));
     bipbuf_poll(cb, 4);
-    CuAssertTrue(tc, 0 == bipbuf_spaceused(cb));
+    CuAssertTrue(tc, 0 == bipbuf_used(cb));
 }
 
 void Txestbipbuffer_cant_offer_if_full(CuTest * tc)
