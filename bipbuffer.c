@@ -103,7 +103,7 @@ unsigned char *bipbuf_peek(const bipbuf_t* me, const unsigned int size)
     if (bipbuf_is_empty(me))
         return NULL;
 
-    return (void*)me->data + me->a_start;
+    return (unsigned char*)me->data + me->a_start;
 }
 
 unsigned char *bipbuf_poll(bipbuf_t* me, const unsigned int size)
