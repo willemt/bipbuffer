@@ -18,4 +18,4 @@ bipbuffer.o: bipbuffer.c
 	$(CC) $(CCFLAGS) -c -o $@ $^
 
 clean:
-	rm -f main.c bipbuffer.o tests $(GCOV_OUTPUT)
+	rm -f main.c bipbuffer.o test $(GCOV_OUTPUT)
